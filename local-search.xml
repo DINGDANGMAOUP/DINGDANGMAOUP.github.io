@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>docker容器创建记录</title>
+    <link href="/posts/37080/"/>
+    <url>/posts/37080/</url>
+    
+    <content type="html"><![CDATA[<h3 id="在搭建环境过程中用到的一些容器"><a href="#在搭建环境过程中用到的一些容器" class="headerlink" title="在搭建环境过程中用到的一些容器"></a>在搭建环境过程中用到的一些容器</h3><ul><li>msyql</li></ul><pre><code class="hljs awk">docker run –name mysql8 –restart=always -v <span class="hljs-regexp">/home/</span>kuroneko<span class="hljs-regexp">/DockerData/my</span>sql:<span class="hljs-regexp">/var/</span>lib/mysql -p <span class="hljs-number">3306</span>:<span class="hljs-number">3306</span> -e MYSQL_ROOT_PASSWORD=root -itd mysql:latest</code></pre><ul><li>redis</li></ul><pre><code class="hljs awk">docker run -itd --restart=always  -v <span class="hljs-regexp">/home/</span>kuroneko<span class="hljs-regexp">/DockerData/</span>redis<span class="hljs-regexp">/conf/</span>redis.conf:<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/etc/</span>redis<span class="hljs-regexp">/redis.conf  -p 6379:6379 --name redis redis redis-server /u</span>sr<span class="hljs-regexp">/local/</span>etc<span class="hljs-regexp">/redis/</span>redis.conf</code></pre><ul><li>netdata</li></ul><pre><code class="hljs gradle">docker run -itd --name=netdata \  -p <span class="hljs-number">19999</span>:<span class="hljs-number">19999</span> \  -v netdatalib:<span class="hljs-regexp">/var/</span>lib/netdata \  -v netdatacache:<span class="hljs-regexp">/var/</span>cache/netdata \  -v <span class="hljs-regexp">/etc/</span>passwd:<span class="hljs-regexp">/host/</span>etc/passwd:ro \  -v <span class="hljs-regexp">/etc/g</span>roup:<span class="hljs-regexp">/host/</span>etc/<span class="hljs-keyword">group</span>:ro \  -v <span class="hljs-regexp">/proc:/</span>host/proc:ro \  -v <span class="hljs-regexp">/sys:/</span>host/sys:ro \  -v <span class="hljs-regexp">/etc/</span>os-release:<span class="hljs-regexp">/host/</span>etc/os-release:ro \  --restart unless-stopped \  --cap-add SYS_PTRACE \  --security-opt apparmor=unconfined \  netdata/netdata</code></pre>]]></content>
+    
+    
+    <categories>
+      
+      <category>docker</category>
+      
+      <category>linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>docker</tag>
+      
+      <tag>mysql</tag>
+      
+      <tag>redis</tag>
+      
+      <tag>netdata</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>部署k8s笔记（二）</title>
+    <link href="/posts/55650/"/>
+    <url>/posts/55650/</url>
+    
+    <content type="html"><![CDATA[<p>安装docker后为了方便非root用户不带sudo运行docker指令作如下操作</p><pre><code class="hljs crmsh"><span class="hljs-comment">#该操作一般安装docker时都帮你操作了，以防万一先记录</span>sudo groupadd docker    <span class="hljs-comment">#将当前用户加入docker组</span>sudo gpasswd -a $<span class="hljs-keyword">USER</span> <span class="hljs-title">docker</span><span class="hljs-comment">#更新组策略</span>newgrp docker</code></pre><p>之后</p><pre><code class="hljs bash"><span class="hljs-built_in">logout</span></code></pre><p>或注销退出当前用户（我是本机操作QAQ，）</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>linux</category>
+      
+      <category>k8s</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>docker</tag>
+      
+      <tag>非root用户</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>k8s+docker+harbor+jenkins+sonarqube搭建方案</title>
+    <link href="/posts/51560/"/>
+    <url>/posts/51560/</url>
+    
+    <content type="html"><![CDATA[<h2 id="DevOps-一"><a href="#DevOps-一" class="headerlink" title="DevOps (一)"></a>DevOps (一)</h2><h5 id="一-环境准备"><a href="#一-环境准备" class="headerlink" title="一,环境准备"></a>一,环境准备</h5><table><thead><tr><th align="center">ip</th><th align="center">hostname</th><th align="center">centos</th><th align="left">remark</th></tr></thead><tbody><tr><td align="center">————</td><td align="center">master69</td><td align="center">7.8</td><td align="left">master node ，nfs</td></tr><tr><td align="center">————</td><td align="center">node125</td><td align="center">7.8</td><td align="left">worker node</td></tr><tr><td align="center">————</td><td align="center">node14</td><td align="center">7.8</td><td align="left">worker node</td></tr><tr><td align="center">————</td><td align="center">node194</td><td align="center">7.8</td><td align="left">harbor</td></tr><tr><td align="center">————</td><td align="center">node79</td><td align="center">7.8</td><td align="left">elkb</td></tr></tbody></table><h5 id="二-软件版本"><a href="#二-软件版本" class="headerlink" title="二,软件版本"></a>二,软件版本</h5><ul><li>Kubernetes v1.19.4</li><li>Docker v19.03.12</li><li>Harbor v2.1.1</li><li>elkb v?(<font color=red>待定</font>)</li></ul><ul><li><a href="https://www.kubernetes.org.cn/"><font color=blue>k8s架构图</font></a><br><img src="https://www.kubernetes.org.cn/img/2016/10/20161028141542.jpg" alt="k8s" title="k8s架构"></li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>持续集成</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>docker</tag>
+      
+      <tag>k8s</tag>
+      
+      <tag>harbor</tag>
+      
+      <tag>jenkins</tag>
+      
+      <tag>sonarqube</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>部署k8s笔记（一）</title>
+    <link href="/posts/18712/"/>
+    <url>/posts/18712/</url>
+    
+    <content type="html"><![CDATA[<h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>由于公司给定了不同网段linux服务器（centos7.8）</p><h6 id="产生的问题"><a href="#产生的问题" class="headerlink" title="产生的问题"></a>产生的问题</h6><p>当输入 </p><pre><code class="hljs routeros">kubectl <span class="hljs-builtin-name">get</span> nodes</code></pre><p>出现了以下问题</p><pre><code class="hljs routeros">The<span class="hljs-built_in"> connection </span><span class="hljs-keyword">to</span> the<span class="hljs-built_in"> server </span>localhost:8080 was refused - did you specify the right host <span class="hljs-keyword">or</span> port?</code></pre><p>针对此问题的解决方案<br>将<font color=blue>master node</font> 目录：  /etc/kubernetes/admin.conf   分发至出现该问题<font color=blue>worker node</font>的相同目录下</p><pre><code class="hljs elixir">scp  /etc/kubernetes/admin.conf  user<span class="hljs-variable">@IP_address</span><span class="hljs-symbol">:/etc/kubernetes/admin</span>.conf</code></pre><p>加入环境变量（注意要英文状态下的<font color=red>双引号</font>,不知道为啥markdown显示为中文状态下的双引号，自己注意替换）</p><pre><code class="hljs awk">echo “export KUBECONFIG=<span class="hljs-regexp">/etc/</span>kubernetes<span class="hljs-regexp">/admin.conf” &gt;&gt; ~/</span>.bash_profile</code></pre><p>使环境变量配置生效</p><pre><code class="hljs bash"><span class="hljs-built_in">source</span> ~/.bash_profile</code></pre>]]></content>
+    
+    
+    <categories>
+      
+      <category>linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>k8s</tag>
+      
+      <tag>kubernetes</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>第一篇博客</title>
+    <link href="/posts/59448/"/>
+    <url>/posts/59448/</url>
+    
+    <content type="html"><![CDATA[<p>朋友你好！我是kuroneko，很高兴你能来到我的博客，这是我搭建博客后的第一篇。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>fist</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>start</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
